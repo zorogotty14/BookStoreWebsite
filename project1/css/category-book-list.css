@@ -1,0 +1,112 @@
+#book-boxes {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 1em;
+  gap: 1em;
+}
+
+.book-box {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--card-background-color);
+  padding: 1em;
+  gap: 0.25em;
+}
+
+.book-title {
+  font-weight: bold;
+}
+
+.book-author {
+  font-style: italic;
+}
+
+.arrivals{
+  width: 100%;
+  height: 150vh;
+  margin-bottom: 35px;
+  flex-basis: 65%;
+}
+
+.arrivals h1{
+  font-size: 50px;
+  text-align: left;
+  padding-left: 20px;
+  margin-bottom: 35px;
+}
+
+.arrivals .arrivals_box{
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-gap: 25px 0;
+}
+
+.arrivals .arrivals_box .arrivals_card{
+  width: 250px;
+  height: 350px;
+  text-align: center;
+  padding: 5px;
+  border: 1px solid #919191;
+  background-color: #aaa;;
+  margin: auto 20px;
+  
+}
+
+.arrivals .arrivals_box .arrivals_card:hover{
+  box-shadow: 0 0 5px #ffab23;
+}
+
+.arrivals .arrivals_box .arrivals_card .arrivals_image{
+  width: 150px;
+  height: 220px;
+  margin: 0 auto;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+
+.arrivals .arrivals_box .arrivals_card .arrivals_image img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: 0.3s;
+}
+
+.arrivals .arrivals_box .arrivals_card:hover .arrivals_image img{
+  transform: scale(1.1);
+}
+
+.arrivals .arrivals_box .arrivals_card .arrivals_tag p{
+  font-family: var(--default-font-family);
+  font-size: 15px;
+  padding-bottom: 5px;
+}
+
+.offer-btn {
+	box-shadow:inset 0px 1px 0px 0px #fff6af;
+	background:linear-gradient(to bottom, #ffec64 5%, #ffab23 100%);
+	background-color:#ffec64;
+	border-radius:6px;
+	border:1px solid #ffaa22;
+	display:inline-block;
+	cursor:pointer;
+	color:#333333;
+	font-family:Arial;
+	font-size:15px;
+	font-weight:bold;
+	padding:6px 24px;
+  padding-top: 10px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #ffee66;
+}
+.offer-btn:hover {
+	background:linear-gradient(to bottom, #ffab23 5%, #ffec64 100%);
+	background-color:#ffab23;
+}
+.offer-btn:active {
+	position:relative;
+	top:1px;
+}

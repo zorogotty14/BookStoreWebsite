@@ -1,0 +1,37 @@
+In this project, you will implement the same two pages you implemented in the previous project (home page and category page). But this time you will be using the Vue framework. Vue is a JavaScript framework that makes use of multiple components to implement a Single-Page Application (SPA). A single-page application just has one HTML page (index.html). It uses JavaScript to modify that page so that it can look like any traditional web page in your application. Therefore, you will not technically be implementing two different pages. Instead you will be implementing two views -- a home-page view and a category-page view. The results will be almost exactly the same, but there will be some subtle differences. For example, instead of this in the address bar:
+
+http://localhost:8080/DrKBookstoreHtml/category?name=mystery
+We would see something like this:
+
+http://localhost:8080/DrKBookstoreVue/category/mystery
+But the web page would look the same.
+
+Navigate to your working directory on your system called CS5244. 
+
+Create a Vue project using Vite on the command line. Name the project [name]-bookstore-vue-client, in all lowercase, where [name] is the name you like to be called (based on what you said in the introductions forum; usually, this is your first name).
+Choose the same options as instructed in your sample project activity client, using the command npm create vite@latest
+
+Create a Vue server project using IntelliJ.  Name the project [Name]BookstoreVue, in camel case with no spaces.
+Choose the same options as instructed in your sample project activity server, but make sure the application context for deployment is named [Name]BookstoreVue.
+Open your client project in IntelliJ or VSCode, the same way as in your sample project activity.
+
+Delete the "public" folder and the "src" folder from [name]-bookstore-vue-client,
+and then copy the "public" folder and the "src" folder from "another-bookstore-vite" into "[name]-bookstore-vue-client".
+In your vite.config.ts file, add the base directive from the starter code and change "/AnotherBookstoreVue" to "/[Name]BookstoreVue".
+
+
+Implement your Page Views using Vue
+Now implement your page views. Your home and category pages in this project should look exactly like the home and category pages in the previous project (where you implemented them using HTML and CSS). They should behave the same also.
+
+Submit your Project
+To submit your project, you will have to package it for distribution and upload it to the CS5244 server.
+
+Run "npm run build" to create a dist folder in your client module
+Move all files from the dist folder to the "webapp" folder in your server module
+Use a Tomcat run configuration to see if everything works
+Under the build/libs directory in your server module, you should see a server.war file
+Move the server.war file to your desktop and rename it [Name]BookstoreVue.war
+Go to the ArchiveUpload page, logon with your VT user name and last 4 of your 90 number, and submit the WAR file
+Wait 5 minutes and then check if it worked by going to http://cs5244.cs.vt.edu:8080/[Name]BookstoreVue/
+Submit the URL to Canvas
+I will go through this process in the next Q&A.

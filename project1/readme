@@ -1,0 +1,52 @@
+In this assignment you are going to implement the structure of your web pages using HTML and CSS. You will use the page mockups that you designed in Part 1 as a guide, but you are not required to follow them strictly.
+
+The pages required are:
+
+index.html (home page)
+category.html (category page)
+Your pages should include all images you need to make your application look finished, including images of books. Your header should include the following three links to make it easy to navigate between the pages.
+
+Both the logo and the logo text should link to the welcome page
+All options in the dropdown menu should link to the category page
+In future versions of this project you will be able to change categories. However, for this assignment, simply pick one category and its associated books for the category page. Choosing any category from the category dropdown menu will take you to that one category page.
+
+
+the HTML for the component
+the JavaScript for the component, and
+the CSS for the component
+Therefore, having CSS files that correspond to Vue components will help us. Note that there will not be a perfect 1-to-1 correspondence, so we will still have to do some administrative work next week.
+
+This starter code is meant to help you begin your design using HTML and CSS. Therefore, please ensure you make the following changes:
+
+Do not use the site logo from Another Bookstore, choose your own logo
+Do not use the category images from Another Bookstore
+Do not use the same books from Another Bookstore (some overlap is fine)
+Do not use the same custom properties from Another Bookstore. In particular, your fonts and colors should be different from the Another Bookstore design. You will also want to add, delete, or rename custom properties based on your own design
+Do not use the same button style from Another Bookstore. In particular, do *not* use buttons with bevels (no one has used them for over 10 years now)
+Keep in mind that for many button in Another Bookstore, you will have to use images instead, in keeping with the requirements of Project 1. In particular:
+Use a search image (for example, a magnifying glass) instead of a button
+Use a cart image instead of a button. Also, try to put the cart count (number of items in the cart) somewhere that makes sense, like over the cart or inside the cart. If you have trouble with this, ask on Piazza.
+You should probably have a down-caret or down-arrow symbol somewhere on your categories menu. If you are using a hamburger menu instead, then use the standard hamburger menu icon instead of a button with text. For this project, make the hamburger menu work when you hover over it. In general, a hamburger menu should be clicked before it drops down, but this requires JavaScript, so we won't implement that until next week.
+You social media buttons should be images
+This assignment only deals with HTML and simple CSS. Therefore:
+
+Do not use JavaScript for this project
+Do not use preprocessors like SASS
+Do not use frameworks like Bootstrap
+Keep your CSS names simple, content-relevant, and readable
+
+
+All of the design requirements from Project 1 apply to this project. In addition,  make sure the following requirements are met:
+
+Website looks good between 1000px - 1400px
+Book images should be around 200px in height
+Header includes both logo and text logo
+Put padding around everything!
+Cursor should turn from pointer to hand when you hover over category dropdown
+Category you hover over in dropdown should have a subtle style change
+Clicking on a category takes you to the category page (there should be only one category page)
+Category button you hover over on category page should have subtle style change
+Selected category button on category page should be styled differently than unselected category buttons
+Make sure your books on the category page wrap appropriately when you change the page width
+At least one book on category page has "read now" button; at least one does not
+Book information (title/author/price) should be styled differently from one another. Do not use the exact same stylings from Another Bookstore

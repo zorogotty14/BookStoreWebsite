@@ -1,0 +1,78 @@
+{
+  "categories": [
+    {
+      "categoryId": 1001,
+      "name": "Featured"
+    },
+    {
+      "categoryId": 1002,
+      "name": "BestSellers"
+    },
+    {
+      "categoryId": 1003,
+      "name": "Collectible-Books"
+    },
+    {
+      "categoryId": 1004,
+      "name": "Biographies"
+    },
+    {
+      "categoryId": 1005,
+      "name": "Gifts"
+    },
+    {
+      "categoryId": 1006,
+      "name": "science-math"
+    }
+  ],
+  "books": [
+    {
+      "bookId": 1001,
+      "title": "Holly",
+      "author": "Stephen King",
+      "price": 2392,
+      "isPublic": false,
+      "categoryId": 1001
+    },
+    {
+      "bookId": 1002,
+      "title": "Retro Crochet Style",
+      "author": "Savannah Price",
+      "price": 1770,
+      "isPublic": true,
+      "categoryId": 1001
+    },
+    {
+      "bookId": 1003,
+      "title": "The Josiah Manifesto",
+      "author": "Jonathan Cahn",
+      "price": 2199,
+      "isPublic": false,
+      "categoryId": 1001
+    },
+    {
+      "bookId": 1004,
+      "title": "Gambler",
+      "author": "Walters Billy",
+      "price": 2716,
+      "isPublic": false,
+      "categoryId": 1001
+    },
+    {
+      "bookId": 1005,
+      "title": "Build the Life You Want",
+      "author": "Oprah Winfrey",
+      "price": 2199,
+      "isPublic": false,
+      "categoryId": 1001
+    },
+    {
+      "bookId": 1006,
+      "title": "Shadow Dance",
+      "author": "Christine Feehan",
+      "price": 989,
+      "isPublic": true,
+      "categoryId": 1001
+    }
+  ]
+}

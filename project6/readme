@@ -1,0 +1,143 @@
+We are currently using three Pinia stores in our project: the Categories store (holds the list of categories), the Book store (holds the list of books for the selected category), and the Cart store (holds the shopping cart. In Project 6, we have implemented the add-to-cart button click, and we made the cart count update automatically. Both of these actions rely on the Cart store. In this part of the assignment, you will add a cart page and cart updates to your project. You will use the shopping cart classes given to you in Project 7, and we will use the Cart store to implement updating the quantities on your cart page and to clear the cart.
+
+Setup your project
+Set up Project 7 by copying Project 6 similarly to what you did for moving from Project 5 to Project 6, this time changing from "State" to "Session" instead of changing from "Fetch" to "State". Don't forget to delete the files in your server's webapp directory that came from you client's dist folder. Also, don't forget to delete your client's dist folder.
+
+Run your client project while your server side is running. It should work as in Project 6.
+
+Update the CartStore
+Replace the code in your stores/cart.ts file with the code in the cart.ts file that we have given you. Go into your local storage and delete all local storage associated with your bookstore application, if any. To do this, your application should be running. Open the dev-tools and choose the "Application" tab. You should see the shopping cart item if it is there. Just highlight it and delete it.
+
+Create a cart page
+Create at least two Vue components for your cart page:
+
+CartView.vue — under the views folder
+CartTable.vue — under the components folder. Please use the starter code for this (see above in resources). It already uses CSS Grid (which is a requirement) and the grid has separators. Style the grid table in accordance to your own liking. If you like, you may keep the layout the same, except for the price/quantity column (see below).
+When you create the Cart page (and the blank checkout page below), make sure you are using Vue 3's Composition API along with <script setup lang="ts">. Here is some starter code for the Cart page:
+
+<script setup lang="ts">
+import CartTable from "@/components/CartTable.vue";
+import { useCartStore } from "@/stores/cart";
+const cartStore = useCartStore();
+const clearCart = function () {
+  cartStore.clearCart();
+};
+</script>
+<style scoped>
+h1 {
+  margin: 1em auto;
+  text-align: center;
+}
+</style>
+
+<template>
+  <h1>Cart Page</h1>
+  <cart-table></cart-table>
+</template>
+Create a (mostly blank) checkout page
+Like the Cart page, the Checkout page goes in your views folder. Please have a short message on the page so that there is some space between the header and footer. Feel free to have a button that takes you back to the cart page, but it is not a requirement. Once you have created both a Cart page (it's incomplete, but you will take care of that soon) and a Checkout page, add their routes to the router/index.ts file:
+
+  {
+    path: "/cart",
+    name: "cart-view",
+    component: CartView,
+  },
+
+  {
+    path: "/checkout",
+    name: "checkout-view",
+    component: CheckoutView,
+  },
+ 
+
+Now that you have a route for the Cart page, update your cart icon button (and the cart count itself) to go to the cart page. Here is what my code looks like. 
+
+<router-link to="/cart">
+  <div class="cart-icon icon-button">
+    <i class="fas fa-cart-shopping"></i>
+  </div>
+  <div class="cart-count">{{ cartStore.count }}</div>
+</router-link>
+Run the application and fix the cart page
+ Now let's run the application again. First Tomcat, then npm run dev. Once the application is running and you are on the welcome page, double check the local storage to ensure there is nothing in it. Reload the page. You should see a cart count of zero.
+
+Now go to a category page and add a book to the cart. Click the same add-to-cart button a few times so you get multiple copies of the same book in the cart. You can add other books if you like also. Now go to the cart page by clicking the cart icon in the header.
+
+You may see a blank page. If so, the most likely explanation is that the "bookImageFilename" function is different from the one you have in your CategoryBookListItem component. If so, replace it. Now your book images should be found and the page should render.
+
+You should see a nice-looking grid table with an ugly-looking quantity column. You need to clean up the price/quantity column and make it look nice. If you would like a challenge, change the heading/price column so that it is actually two separate columns in the table. To do that, you will have to add a column to the "grid-template-columns" property in the cart-table class. This is non-trivial, and it means that the several other parts of the CSS will have to change, so you probably don't want to try it until you get everything else working.
+
+The buttons that say dec and inc should be icon buttons (some ideas might be to use + and - icons, < and > icons, or arrow icons. You can arrange them in any way that looks professional. Be careful about stacking one button on top of the other. If you do that, make sure it does not make the row too high and that the icons don't don't make it hard to read the quantity. Make sure all elements have an appropriate amount of of space between them.
+
+Try clicking the inc/dec buttons. You cart count should update accordingly. However, there is a problem here. The cart in local storage is not being updated. That is because the updateCart function defined in the script section is calling though to a shopping cart method rather than using a cart-store action to update the cart. The cart-store actions have all been modified (in the provided CartStore.ts file) to save the cart to local storage whenever the cart changes. Fix the function so that it uses a cart-store action rather than a shopping cart method. Once you do, you should delete the local storage again and start over. See if the change you made is indeed updating local storage when the increment/decrement buttons are clicked.
+
+You cart page currently contains the cart table. In general, it must have the following:
+
+A proceed-to-checkout button (primary or CTA) that takes you to the empty checkout page
+A continue-shopping button (secondary) that takes you back to the category page. Make sure the selected category on that page is the most recent category you selected. You can do this by adding a "selectedCategoryName" string to the CategoryStore and updating it every time you go to the category page.
+A clear-cart button (tertiary) somewhere near the cart table that empties the cart with a single click.
+Some text stating how many items are in your cart
+Some text stating the subtotal for the items in your cart
+A table containing the items in your cart
+At a minimum, each row should have the book image, the book title, the quantity being ordered, and the unit price of the book, and the total price of the item (unit times quantity). Any column that contains prices should be aligned on cents. Typically this means right-aligned.
+Book images should not be full size. They should be noticeably smaller than the size they appear on the category page, but they should still be readable. Scaling them down by 50% is a good rule of thumb.
+Each row should have a way to update the quantity. Some common ways of doing this are:
+Have both a decrement and increment icon button. If you do this, keep in mind the principle of proximity. The buttons should be closer to each other than they are to other elements. Also, you might consider making the increment button more prominent than the decrement button.
+If you are ambitious, you can try replacing the inc/dec buttons with an HTML number input fieldLinks to an external site. or a dropdown selector button (similar to what Amazon does). However, I (Dr. K) have been having problems with getting these to work well, so I cannot give you the best advice regarding these.
+There should be a way to eliminate a single book from the table, either through a remove button on each row or by taking the quantity down to 0. If you implement a remove button, it should be an unobtrusive tertiary button (don't use, for example a large red garbage can icon that shouts "click me!") 
+If there are no items in your cart, you should have a message saying that the cart is empty along with the continue-shopping button. You should not display the proceed to checkout button if the cart is empty, and you should not display an empty table if the cart is empty.
+Below are some same cart pages with tables, but most of these do not meet all the requirements listed here, so just use them as inspiration.
+
+Saving your cart updates to local storage
+We have provided you with an updated cart.ts file that saves your cart updates to local storage. We want to ensure that the shopping cart persists even if the user closes their browser. When the browser is re-opened, the shopping cart should have the same items it had the last time the user was browsing our site. In general, there are three parts to a Pinia store: the state, actions, and getters. In the Cart store, the state holds the shopping cart, actions modify the cart, and getters return information about the cart. Since actions modify the cart, we want to save the cart in local storage after each modification. Local storage essentially means browser storage. We're going to save the state of the shopping cart to the user's browser. You can access the locally stored contents of your browser by using the dev-tools and looking under the Application tab. You should see the local storage option on the left. Objects in local storage are always key-value pairs. Both the key and the value are strings. Therefore, in order to store something in the user's browser (like our shopping cart) we have to convert it to a string first. We use the stringify function to convert something from an object to a string. It also means that in order to load something from local storage back into our Pinia store, we have to convert it from a string back into an object. We use the parse function to convert something from a string back to an object.
+
+Consolidate your currency code
+Next to main.ts, make a new utils.ts file and add the following code that defines "asDollarAndCents" as a function: 
+
+// From https://flaviocopes.com/how-to-format-number-as-currency-javascript/
+const PriceFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+});
+
+export const asDollarsAndCents = function (cents: number) {
+  return PriceFormatter.format(cents / 100.0);
+};
+
+Import the function into any component that needs it. In the template section, use {{ asDollarsAndCents(item.price) }} to render the price.
+Extra optional challenge: Add the bookImagePrefix and a getBookImageurl method to utils.ts if you have book images on the category and cart pages.  This centralizes the place where we calculate the book images.  Centralising logic like this makes things like image layout easier to change in future.
+Style Requirements
+In addition to the functional requirements given above, here is a list of mostly stylistic requirements that should be observed. The list includes a repetition of some functional requirements based on common problems observed in past courses.
+
+Empty cart
+
+Don't put an empty table on the cart page
+Don't put $0.00 for the price, and don't put "subtotal" if the cart is empty
+Don't put "0 books", say "your cart is empty" or something similar
+Don't say "1 books", say "1 book"
+Cart table
+
+Make sure all table cells have padding
+Don't make your increment decrement buttons significantly larger than the text you are using for the quantity (especially if the quantity text is between the buttons).
+Leave some space between quantity text and inc/dec buttons; leave some space between inc/dec buttons.
+Always align prices on cents (right-align)
+Ensure that the table's book image is smaller than the image on the category page
+Cart icon
+
+Make sure all fonts large enough to read, including the font used for the number of items in the cart
+Make sure both the cart icon AND the cart-count link to the cart page. The cursor should turn into a pointer when you hover over the cart icon and/or the cart-count
+Cart buttons
+
+Don't put the clear cart button in same row as continue-shopping and proceed-to-checkout. Clear-cart should not be a conspicuous button.
+If continue-shopping and proceed-to-checkout ARE in same row, make sure continue-shopping comes first
+Make the "proceed to checkout" button more prominent (in style and/or color) than the continue shopping button
+Make sure the continue-shopping button takes you back to the last category you were on
+Align your buttons appropriately with respect to the table
+Buttons (general)
+
+Make sure your buttons have space around them
+Make sure the cursor turns into a pointer when you hover over buttons or links
+Make sure buttons or links subtly change style when you hover over them
+In general, buttons should not change size when you hover over them (for example, if you are changing the font weight to bold)
+If buttons change size because you want a certain effect (like sliding out), the effect should not change the position of other elements on the page

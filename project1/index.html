@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Prime Books</title>
+    <meta charset="utf-8" />
+    <meta name="description" content="Prime Books, Your Place to read" />
+
+    <!-- Import font-awesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- order of CSS files is important (this is the "Cascade" part of CSS) -->
+
+    <!-- global.css contains resets, custom properties, and utility classes -->
+    <link rel="stylesheet" href="css/global.css" />
+
+    <!-- start from the top-level component and work your way down -->
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="css/app-header.css" />
+    <link rel="stylesheet" href="css/header-dropdown.css" />
+    <link rel="stylesheet" href="css/app-footer.css" />
+    <link rel="stylesheet" href="css/home.css" />
+  </head>
+
+  <body>
+    <main>
+      <header class="container">
+          <div class="wrapper">
+            <div class="top_nav">
+                <div class="left">
+                  <div class="bookstore-logo"><a href="index.html">
+                    <img
+                      src="images/site/logo.png"
+                      alt="Prime Books logo"
+                      width="150px"
+                      height="100px"
+                    />
+                  </a></div>
+                  <div class="search_bar">
+                      <input type="text" placeholder="Search">
+                      <i></i>
+                  </div>
+              </div> 
+              <div class="right">
+                
+                <ul>
+                  <li><a>Hi Reader!</i></a></li>
+                  <li><a href="#">LogIn</a></li>
+                  <li><a href="#"> watchlist</a></li>
+                  <li><a href="#"><i class="fa" style="font-size:24px">&#xf07a;</i>
+                    <span class="cart-count"> 5 </span></a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="navbar">
+              <a href="#home">Home</a>
+              <div class="dropdown">
+                <button class="dropbtn">Featured
+                  <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                  <a href="#">New and coming soon</a>
+                  <a href="#">Collectibles spotlight</a>
+                  <a href="#">Best Books for 2023</a>
+                  <a href="#">Large Print Books</a>
+                </div>
+              </div>
+              <div class="dropdown">
+                <button class="dropbtn">Books
+                  <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                  <a href="#">Best Sellers</a>
+                  <a href="#">Biographies & Memoirs</a>
+                  <a href="#">Literature & Fiction</a>
+                  <a href="#">Children's</a>
+                  <a href="#">Mystery & Suspense</a>
+                  <a href="#">Education & Reference</a>
+                  <a href="#">Religion & Spirituality</a>
+                  <a href="#">History</a>
+                </div>
+              </div>
+              <div class="dropdown">
+                <button class="dropbtn">Collectible Books
+                  <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                  <a href="#">First Edition</a>
+                  <a href="#">Signed</a>
+                </div>
+              </div>
+              <div class="dropdown">
+                <button class="dropbtn">Genre
+                  <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                  <a href="#">Action & Adventure</a>
+                  <a href="#">Arts, Music & Photography</a>
+                  <a href="#">Biographies</a>
+                  <a href="#">Children's Books</a>
+                  <a href="#">Exercise & Fitness</a>
+                  <a href="#">Education & Reference</a>
+                  <a href="#">Historical</a>
+                  <a href="#">Religion & Spirituality</a>
+                  <a href="#">Science & Math</a>
+                  <a href="#">Textbooks</a>
+                </div>
+              </div>
+              <div class="dropdown">
+                <button class="dropbtn">Gifts
+                  <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                  <a href="#">Holidays & Occasions</a>
+                  <a href="#">Popular Collections</a>
+                  <a href="#">Classic Brands</a>
+                </div>
+              </div>
+            </div>
+           </div>
+      </header>
+      <div class="home-page"> 
+        <section class="offers">
+          <div class="offer-row">
+            <div class="offer-column">
+              <h1>Buy 3 and get 20% off</h1>
+              <button class="offer-btn">Shop Now</button> 
+              <h1>Buy 4 and get 30% off</h1>
+              <button class="offer-btn">Shop Now</button>
+            </div>
+            <div class="offer-column">
+              <h1>Collectible spotlight</h1> <br>
+              <button class="offer-btn">Shop Now</button> <br>
+              <br> <h1>Rare and Vintage books</h1> 
+            </div>
+            <div class="offer-column">
+              <h1>Back to School Guide</h1> <br>
+              <button class="offer-btn">Shop Now</button> <br>
+              <br> <h1>Offers start at $2.99</h1>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="home-page-new-arrivals">
+        <div class="arrivals">
+          <h1>BestSellers</h1>
+  
+          <div class="arrivals_box">
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_1.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: Road Atlas - Adventure</h5>
+                      <h5>by: National geographic</h5>
+                      <h5>Price: $24.28</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_2.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                    <h5>Title: You're Finally Here!</h5>
+                    <h5>by: Maelanie Watt</h5>
+                    <h5>Price: $24.28</h5>
+                    <button class="offer-btn">Add to cart</button> <br>
+                </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_3.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: Valiant Women</h5>
+                      <h5>by: Lena Andrews</h5>
+                      <h5>Price: $25.85</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_4.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: Yummy Toddler Food</h5>
+                      <h5>by: Amy Palanjian</h5>
+                      <h5>Price $23.53</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_5.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: The In-Between</h5>
+                      <h5>by: Hadley Vlahos</h5>
+                      <h5>Price $21.66</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_6.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: Lady Tan's Circle of Women</h5>
+                      <h5>by: Lisa See</h5>
+                      <h5>Price $22.63</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_7.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: The Worry-Free Parent</h5>
+                      <h5>by: Sissy Goff</h5>
+                      <h5>Price $14.47</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_8.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: The Cook's Book</h5>
+                      <h5>by: Bri McKoy</h5>
+                      <h5>Price $28.05</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_9.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: The Fourth Turning Is Here</h5>
+                      <h5>by: Neil Howe</h5>
+                      <h5>Price $25.93</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_10.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: Tom Lake</h5>
+                      <h5>by: Ann Patchett</h5>
+                      <h5>Price $26.19</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+          </div>
+  
+        </div>
+      </div>
+      <div class="home-page-new-arrivals">
+        <div class="arrivals">
+          <h1>BestSellers</h1>
+  
+          <div class="arrivals_box">
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_1.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: Road Atlas - Adventure</h5>
+                      <h5>by: National geographic</h5>
+                      <h5>Price: $24.28</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_2.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                    <h5>Title: You're Finally Here!</h5>
+                    <h5>by: Maelanie Watt</h5>
+                    <h5>Price: $24.28</h5>
+                    <button class="offer-btn">Add to cart</button> <br>
+                </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_3.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: Valiant Women</h5>
+                      <h5>by: Lena Andrews</h5>
+                      <h5>Price: $25.85</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_4.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: Yummy Toddler Food</h5>
+                      <h5>by: Amy Palanjian</h5>
+                      <h5>Price $23.53</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_5.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: The In-Between</h5>
+                      <h5>by: Hadley Vlahos</h5>
+                      <h5>Price $21.66</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_6.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: Lady Tan's Circle of Women</h5>
+                      <h5>by: Lisa See</h5>
+                      <h5>Price $22.63</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_7.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: The Worry-Free Parent</h5>
+                      <h5>by: Sissy Goff</h5>
+                      <h5>Price $14.47</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_8.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: The Cook's Book</h5>
+                      <h5>by: Bri McKoy</h5>
+                      <h5>Price $28.05</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_9.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: The Fourth Turning Is Here</h5>
+                      <h5>by: Neil Howe</h5>
+                      <h5>Price $25.93</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+              <div class="arrivals_card">
+                  <div class="arrivals_image">
+                      <img src="images/books/Bestseller_10.jpg">
+                  </div>
+                  <br><div class="arrivals_tag">
+                      <h5>Title: Tom Lake</h5>
+                      <h5>by: Ann Patchett</h5>
+                      <h5>Price $26.19</h5>
+                      <button class="offer-btn">Add to cart</button> <br>
+                  </div>
+              </div>
+  
+          </div>
+  
+        </div>
+      </div>
+      <footer class="footer">
+        <div class="footer-wrapper">
+          <div class="footer-nav">
+              <div class="footer-left">
+                <div class="footer-bookstore-logo"><a href="index.html">
+                  <img
+                    src="images/site/logo.png"
+                    alt="Prime Books logo"
+                    width="150px"
+                    height="100px"
+                  />
+                </a></div>
+            </div> 
+            <div class="footer-right">
+              <ul>
+                <li><a href="#">About US</a></li>
+                <li><a href="#">Contact US</a></li>
+                <li><a href="#">directions</a></li>
+                <li><a href="#" class="fa fa-facebook"></a></li>
+                <li><a href="#" class="fa fa-twitter"></a></li>
+                <li><a href="#" class="fa fa-linkedin"></a></li>
+                <li><a href="#" class="fa fa-instagram"></a></li>
+                <li><a href="#" class="fa fa-rss"></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </body>
+</html>

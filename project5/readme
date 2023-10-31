@@ -1,0 +1,321 @@
+Coding Notes
+When an anchor tag (applies to router-links) is inside of a list item, you should use display: block on the anchor tag to ensure that it takes up the entire list item. 
+li a {
+    display: block;
+}
+Use the following Rest API URL when accessing your REST API. You should not modify the CORS filter we gave you. 
+const apiUrl =
+  `${location.protocol}//${location.hostname}:`+
+  `${location.port === "5173" ? "8080" : location.port}` +
+  `${import.meta.env.BASE_URL}/api`;
+ 
+
+The hamburger demo uses a script section based on the Options API. We are using the Composition API with <script setup lang="ts">. The following code is correct for the Composition API. 
+<script setup lang="ts">
+import { inject, ref } from "vue";
+let mainMenuOpen = ref(false);
+function toggleMainMenu() { mainMenuOpen.value = !mainMenuOpen.value; }
+const categoryList = inject("categoryList");
+</script>
+Project 6 Setup
+Ensure that Vue.js devtools for Chrome are installed: https://devtools.vuejs.org/guide/installation.htmlLinks to an external site.
+Ensure that your Project 5 ([Name]BookstoreFetch) is working correctly and running as expected.
+Duplicate your Fetch projects in your file system (should be under directory CS5244)
+Rename the copy of your server project to [Name]BookstoreState.
+Rename the copy of your client project to [name]-bookstore-state-client.
+Open the new projects in IntelliJ and/or VSCode or other editor.
+Follow previous instructions for server migrationLinks to an external site. but migrate from Fetch to State 
+Follow previous instructions for client migrationLinks to an external site. but migrate from fetch to state.
+Run Tomcat in your server project.  Your index.jsp page should appear with your database data. Make sure it is running on port 8080 and that your path contains State instead of Fetch.
+Run "npm run dev" in your client project.  In a terminal window, make sure you are in the client directory and do "npm run dev". You should see your project running on port 5173 and your path should contain State. Click on the link to see your project and ensure it behaves as it did in Project 5.
+Centralize access to the Server
+In your previous project, multiple calls to fetch were being made from multiple locations.  Let's centralize how we calculate the url to access the server api.
+Inside your client's src folder, create a file named "api.ts". Place the following code inside that file.
+export const apiUrl =
+`${location.protocol}//${location.hostname}:`+
+`${location.port === "5173" ? "8080" : location.port}` +
+`${import.meta.env.BASE_URL}/api`;
+This code creates your API URL. Remember that the API is on your server. This code essentially uses everything from your client's URL (including the correct application context) and appends the "api" directory. However, it does one little trick:
+if you are using port 5173 (as you do when you do "npm run dev" on the client side when Tomcat is already running), then it uses port 8080, where the server is running.
+but if you have consolidated your client and server (through npm run build and transferring the dist files) you are using port 8080 or port 8443 already, this code will keep that port.
+Now import the apiUrl in the appropriate components ( use import { apiUrl } from "@/api" ) and use it in place of the portion of the URL strings in your fetch calls that correspond to the api path.
+Run you application and check that it works as it did in Project 5.
+Create Pinia Stores
+Pinia is Vue 3's default state management tool. It holds global state inside a collection of stores, and provides actions and getters to manage that state. We're going to create 3 different stores for our project: a category store that holds the list of categories, a book store that holds the list of books for the current category, and a cart store that holds the items in the shopping cart.
+Create the Category Store
+Verify pinia in your client module inside package.json:
+"pinia": "^2.0.32",
+If pinia is not listed as a dependency there, run:
+npm install pinia
+Verify that the main.ts file uses Pinia
+
+import { createPinia } from "pinia";
+...
+app.use(createPinia());
+...
+
+Create a category.ts file inside your stores directory
+import defineStore from pinia
+import CategoryItem from the types file
+import apiUrl from the api file
+Use the defineStore function to create a store named "category":
+export const useCategoryStore = defineStore("category", {
+  state: () => ({
+    categoryList: [] as CategoryItem[],
+  }),
+  actions: {
+    async fetchCategories() { ... }
+  },
+  // getters
+});
+By convention, Pinia recommends naming the function that returns the store "use" followed by the store name. So here we are using "useCategoryStore" as our function name. This function is exported and will be imported by components that need access to the store.
+
+The first argument to defineStore is the name and the second argument is an object with 3 properties: state, actions, and getters. We're not going to use any getters in this store, but we will create an action that fetches our categories and populates our category-list. The state property is a function that returns the global objects we want to use. In this case, it's just the list of categories. Since we're using TypeScript, we can't just give the categoryList a value of an empty array. TypeScript will interpret that as having type Any[]. We want to ensure that the elements of the array are category items, so we are using the "as" feature to tell TypeScript that.
+
+Use the relevant code from the script section of the TheHeaderDropdown component to complete the fetchCategories method in the category store. Instead of assigning the result of the fetch call to a constant called categoryList, assign it to the categoryList in the state by using "this.categoryList = ..."
+Let us now make sure that at the beginning of our client application's lifetime, we ask for the categories with a call to the fetchCategories action in the CategoryStore.  This will populate data in the store.  In App.vue:
+Import "useCategoryStore" from the Category Store.
+Create a constant called categoryStore and assign the useCategoryStore function to it.
+Call the fetchCategoriers action using the categoryStore constant.
+Now we need to replace the code we moved from TheHeaderDropdown with a call to the categoryList in the CategoryStore.  In TheHeaderDropdown.vue:
+Import "useCategoryStore" from the Category Store.
+Create a constant called categoryStore and assign the useCategoryStore function to it.
+In the v-for directive that uses categoryList, change it to categoryStore.categoryList.
+Make sure you got rid of the code that you moved to the category store from TheHeaderDropdown. Once you are done, you MAY still be left with:
+
+provide("categoryList", categoryList);
+
+Now that we have the category list in global, we don't *need* to use Vue's provide-inject mechanism anymore. Remove the provide code - it is not needed.  Instead, whenever we need the category list in a component, we import the category store and use the category list directly, WITHOUT TALKING TO THE SERVER AGAIN.
+
+Run your code, your header dropdown should work now.
+
+Your nav-bar, however, will still be performing a fetch call that is un-necessary. Clean up your Navbar component and any other components needing to use categories as you did with your HeaderDropdown component. 
+
+Now we need to fix how we fetch the books.
+
+Create the Book Store
+Create a book.ts file under the stores directory and place the following code inside.
+
+import { defineStore } from 'pinia'
+import type { BookItem, CategoryItem } from '@/types'
+import { apiUrl } from '@/api'
+import { useCategoryStore } from '@/stores/category'
+
+export const useBookStore = defineStore('book', {
+  state: () => ({
+    bookList: [] as BookItem[]
+  }),
+  actions: {
+    async fetchBooks(categoryName: string) {
+      const categoryStore = useCategoryStore()
+
+      const selectedCategoryName =
+        categoryStore.categoryList?.find((category) => category.name === categoryName)?.name ||
+        categoryName
+
+      const response = await fetch(`${apiUrl}/categories/name/${selectedCategoryName}/books`)
+      this.bookList = await response.json()
+    }
+  }
+  // getters
+})
+Notice that we are using the category store here, but we are not accessing it until we are inside the fetchBooks function. This does not always guarantee that the category store has already been populated by the time we need to use it here, nor does it guarantee that the customer is asking for a known category.  These error cases are handled here by if all else fails sending the requested categoryName to the server in a books request.
+
+(If you get some kind of error telling you the Pinia may not be installed, make sure you are not trying to access the category store until you are inside the fetchBooks function.)
+
+Now let's make some radical changes. Notice that the CategoryView (CV) component *fetches* the bookList. The CV component calls through to the TheCategoryBookList (CBL) component. When it does, it uses a prop in order to pass the bookList. Now that the we have a global store that fetches and holds the bookList, let's use the CV component to tell the store to fetch the book-list, and let's access the book-list in the CBL component.  Therefore, we can do the following:
+
+Update the CV Component
+Use the following code.
+
+<script setup lang="ts">
+import TheCategoryNav from "@/components/TheCategoryNav.vue";
+import TheCategoryBookList from "@/components/TheCategoryBookList.vue";
+import {useRoute} from "vue-router";
+import {useBookStore} from "@/stores/book";
+import {watch} from "vue";
+
+const route = useRoute();
+
+const bookStore = useBookStore();
+
+watch(
+  () => route.params.name,
+  (newName) => {
+    await bookStore.fetchBooks(newName as string);
+  },
+  { immediate: true }
+);
+</script>
+
+<style scoped></style>
+
+<template>
+ <div>
+  <the-category-nav></the-category-nav>
+  <the-category-book-list></the-category-book-list>
+ </div>
+</template>
+Note that we still have to watch for route changes involving the category name.
+
+Update the CBL Component
+Import the Book Store, and create the associated bookStore constant. In your v-for directive in the template section, change "bookList" to bookStore.bookList.  Remove the bookList prop.
+
+Finally, you can *delete* the <suspense> tags in your App.vue component. Of course, this assumes that you have been doing things by following along with the project descriptions (especially Project 5). If you deviated significantly from Project 5's description, you may have to figure out how to clean things up with Pinia. But even then, it should not be that difficult.
+
+Essentially, create the stores, get rid of provide-inject, import the stores where you need them, and qualify categoryList and bookList with their respective stores. And *simplify*.
+
+Create the Cart Store
+The last thing we are going to is create a Cart Store for the Shopping Cart. Before doing this, we need to create two TypeScript class: ShoppingCart and ShoppingCartItem. In your client's src directory, add the following to a new models/ShoppingCart.ts file. The code is given to you below.
+
+Code for ShoppingCart and ShoppingCartItem
+
+/*
+
+The representation of a cart is an array of ShoppingCartItem.
+
+ */
+
+export class ShoppingCart {
+  private itemArray: ShoppingCartItem[];
+
+  constructor() {
+    this.itemArray = [];
+  }
+
+  // A getter (function prefixed with get) allows you to call the function as a property
+  // For example, here you would call cart.numberOfItems instead of cart.numberOfItems()
+
+  /*
+   * Returns the total number of books in the shopping cart.
+   */
+  get numberOfItems(): number {
+    return this.itemArray.reduce((count: number, item: ShoppingCartItem) => {
+      return count + item.quantity;
+    }, 0);
+  }
+
+  /*
+   * Returns true if the cart is empty; false otherwise.
+   */
+  get empty(): boolean {
+    return this.itemArray.length <= 0;
+  }
+
+  /**
+   * Returns the sum of the item's price multiplied by the quantity for all
+   * items in shopping cart list. This is the total cost excluding the surcharge.
+   */
+  get subtotal() {
+    return this.itemArray.reduce((amount: number, item: ShoppingCartItem) => {
+      return amount + item.book.price * item.quantity;
+    }, 0);
+  }
+
+  /**
+   * Returns the total cost of the order (subtotal + surcharge).
+   */
+  get total() {
+    return this.subtotal + this.surcharge;
+  }
+
+  /**
+   * Returns the surcharge to be applied for items in the cart.
+   */
+  get surcharge() {
+    return 500;
+  }
+
+  /**
+   * Empties this cart, discards all items.
+   */
+  clear(): void {
+    this.itemArray = [];
+  }
+
+  /**
+   * Adds a single specified book to the shopping cart.
+   */
+  addBook(book: BookItem) {
+    const existingItem = this.itemArray.find(
+      (item) => item.book.bookId == book.bookId
+    );
+    if (!existingItem) {
+      const newItem = new ShoppingCartItem(book);
+      newItem.quantity = 1;
+      this.itemArray.push(newItem);
+    } else {
+      existingItem.quantity++;
+    }
+  }
+
+  /**
+   * Updates the quantity of the specified book by the specified amount.
+   * If '0' is the given quantity, the book is removed from the cart.
+   */
+  update(book: BookItem, quantity: number) {
+    if (quantity < 0 || quantity > 99) return;
+
+    const existingItemIndex = this.itemArray.findIndex(
+      (item) => item.book.bookId == book.bookId
+    );
+    if (existingItemIndex !== -1) {
+      if (quantity !== 0) {
+        this.itemArray[existingItemIndex].quantity = quantity;
+      } else {
+        // remove item if quantity == 0
+        this.itemArray.splice(existingItemIndex, 1);
+      }
+    }
+  }
+
+  get items(): readonly ShoppingCartItem[] {
+    return this.itemArray;
+  }
+}
+
+export class ShoppingCartItem {
+  readonly book: BookItem;
+  quantity: number;
+
+  constructor(theBook: BookItem) {
+    this.book = theBook;
+    this.quantity = 1;
+  }
+}
+The code is fairly straightforward. It is similar to Java code. Note that some of the methods use lambda expressions.
+
+We will access the ShoppingCart in our Cart Store. Here is the code.
+
+import { defineStore } from 'pinia'
+import type { BookItem } from '@/types'
+import { ShoppingCart } from '@/models/ShoppingCart'
+
+export const useCartStore = defineStore('cart', {
+  state: () => ({
+    cart: new ShoppingCart()
+  }),
+
+  getters: {
+    count(): number {
+      return this.cart.numberOfItems
+    }
+  },
+
+  actions: {
+    clearCart() {
+      this.cart.clear()
+    },
+    addToCart(book: BookItem) {
+      this.cart.addBook(book)
+    },
+    updateBookQuantity(book: BookItem, quantity: number) {
+      this.cart.update(book, quantity)
+    }
+  }
+})
+Now that you have the code for the cart store, make sure you can use it by doing the following.
+
+In your CategoryBookListItem component, use the @click directive on your add-to-cart button to add a book to the cart.
+In your TheHeader component, use the store to keep the cart count up to date.
+Once you have done this, you should be able to click on any add-to-cart button and see the change reflected in your cart count.

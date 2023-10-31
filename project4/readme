@@ -1,0 +1,122 @@
+Deliverables: Upload screenshot of the category page to Canvas. The screenshot should include your browser and its address bar. The path in your URL should include [Name]BookstoreFetch.
+
+[ADDED Oct 3] The category you use in the screenshot should not be your default category (it should not be the category you used in Project 3].
+
+It's fine if the screenshot is of your client project when running npm run dev, but it should be accessing the REST API from your running server project.
+Resources:
+
+AnotherBookstoreFetchLinks to an external site. (client)
+CorsFilter.java
+Overview
+In this project, you will combine Project 3 (Vue) with Project 4 (Rest). The result will be a home page and category page that dynamically update depending on the selected category. To do this, we are going to use JavaScript's "fetch" function (Fetch APILinks to an external site.) to retrieve data from the REST API created in Project 4.
+
+Duplicate Project 4
+Run your server-side project from Project 4 ([Name]BookstoreRest) and make sure it works. Try testing it with something similar to the the following REST API path: http://localhost:8080/AnotherBookstoreFecth/api/categories/name/Science Fiction/suggested-books?limit=2.
+Duplicate the [Name]BookstoreRest project in your file system and rename the new copy [Name]BookstoreFetch.
+Open the new project in IntelliJ IDEA Ultimate.
+In your top-level settings.gradle file, change the root project name to [Name]BookstoreFetch. Make sure you reload the gradle changes by clicking the "load gradle changes" button.
+Edit your Tomcat run configuration. Go to the deployment tab and remove the [Name]BookstoreRest.war artifact. You should see an error saying there is no artifact marked for deployment. Click the "Fix" button and choose the non-exploded [Name]BookstoreFetch.war artifact. Remember to fix the application context to reflect the project name. Double check the name in the server tab.
+Run the project and test some complex APIs. The APIs we will be needed for project 5 are ".../api/categories/" and ".../api/categories/name/[CategoryName]/books".
+Duplicate Project 3
+In your file system, duplicate your project [name]-bookstore-vue-client, and rename the new project to [name]-bookstore-fetch-client.
+Open your new project in VSCode or IntelliJ. If the dist folder is still present, delete the dist folder an all its contents.
+Replace all occurrences of "vue-client" with "fetch-client" in all files. In my project, there were 4 occurrences in all: 2 from package-lock.json, 1 from package.json, and 1 from README.md)
+Go to vite.config.js and replace [Name]BookstoreVue with [Name]BookstoreFetch.
+Run the client project in the terminal with "npm run dev" and ensure that it works like Project 3.
+Use Fetch to get the Categories
+In your header dropdown component you should see script setup code similar to this:
+
+<script setup lang="ts">
+import { inject } from "vue";
+import type { CategoryItem } from "@/types";
+const categoryList = inject("categoryList") as CategoryItem[];
+</script>
+This code injects the category list from a list that was provided by the root component (App.vue). The App component obtained the category list from db.json. We are no longer going to be using db.json for our data. Instead, we will use the REST API we created in Project 4. But we're not going to get rid of db.json just yet. On MDN's web page "Using the Fetch API" the following code is given:
+fetch("http://example.com/movies.json")
+  .then((response) => response.json())
+  .then((data) => console.log(data));
+This is the easiest way to use the fetch method to obtain a JSON string. You simply pass in the URL of the REST API you want. The fetch method returns a Promise object. A promise must resolve before it can be used. That's because promises are asynchronous -- it takes time for them to resolve into an object. The "then" method is used to capture the object that the promise resolves to, and then you can manipulate that object. A fetch promise resolves to a Response object, because you are getting a response back from the network. The first "then" method above takes the body of the response object and parses it into a JSON object. The json() method also returns a promise that may take time to resolve. If everything works as expected, the json() promise will resolve into a JSON object. The second "then" statement takes the JSON object and prints it out to the console. when you have multiple "then" statements like this, it is referred to as a "promise chain". Promise chains can exist across multiple modules or components.
+Another way of dealing with promise is to use async and await. The async keyword is used when declaring a function and it denotes that the function is asynchronous. The await keyword is used when calling and asynchronous  function. A function that returns a promise (like fetch) is asynchronous. You can get the same effect of the code above by using async and await:
+let response = await fetch("http://example.com/movies.json");
+let data = await response.json();
+console.log(data);
+Many people find this syntax easier to read, and it is what we are going to use for this project. But you should also know about the then method and promise chains because they are still widely used.
+Right now if you run your project using "npm run dev", it just looks like your Vue client. The URL is only a placeholder. However, we have an API that returns a list of categories: http://localhost:8080/[Name]BookstoreFetch/api/categories/. 
+Once we are fetching the categories from our REST API, we no longer need to inject them, so our script setup will look something like this:
+<script setup lang="ts">
+import type { CategoryItem } from "@/types";
+let response = await fetch("http://localhost:8080/AnotherBookstoreFetch/api/categories/");
+let data = await response.json();
+let categoryList = data as CategoryItem[];
+</script>
+Make sure your server project is running, and remember that you need to be connected with Virginia Tech's Pulse Secure app to access the database on the CS5244 server. Now run your client project using "npm run dev".  You may notice that your header dropdown menu is missing. Don't panic. Open you dev-tools console and you should see a message saying that your setup function returns a promise, but it could not find a suspense ancestor of your component. If you have an await call in your script setup section, Vue automatically generates a setup function in your component that is asynchronous. If you have an asynchronous setup function in a Vue component, you *must* have a suspense component somewhere in the project that is higher up in the component tree than your asynchronous component. We know that the App component is the root of the component tree, so the easiest thing to do is to add a <suspense> element directly inside the template section of your App component, so that it looks something like this:
+<template>
+    <suspense>
+        <div class="..."> ...
+    </suspense>
+</template>
+Now you can create async script setup components anywhere in your application and it won't give you an error. However, it will tell you that "suspense" is an experimental feature whose API is likely to change. We can live with that. However, you should also see an error that says something similar to: Access to fetch at 'http://localhost:8080/AnotherBookstoreFetch/api/categories/' from origin 'http://localhost:5173' has been blocked by CORS policy. CORS stands for "Cross Origin Resource Sharing". It is a policy that allows the server to decide which URLs can connect to it. By default only clients coming from the same host and the same port can connect to the server. Our client and server share the same hose (localhost), but they have a different port. Our client runs on port 5173 and our server runs on port 8080. To fix this problem, we have to modify the server so that it allows port 5173 to connect.
+Add a CORS filter to the server project
+Go into IntelliJ IDEA and stop Tomcat. Go to the "api" package in the java directory and create a Java class called "CorsFilter". Paste the code from the CorsFilter.java resource we gave you (above). Notice that it includes the line:
+"Access-Control-Allow-Origin", "http://localhost:5173");
+That tells the server that server that it should allow clients with that hostname and port to connect. The server project does not have hot reloading like our client project does, so we have to restart Tomcat. Once we do, we can go back to the page displaying our Vue App (which does have hot reloading) and we should be able see the header dropdown, and when we hover over it, we should see all the categories. Clicking on any one of the categories should take us to the category page, just like in Project 3.
+Get categories for other components that need them
+Once you are successfully using fetch in your header dropdown component, apply the same code revision to your category navbar component, and any other component that needs to iterate through the categories. Once you are convinced that db.json is no longer needed, delete the reference to it in your App.vue component.
+Use Fetch to get Books
+It's time to fetch the books. If your app is similar to mine, you get the book list in the CategoryView component and pass it as a prop to the the CategoryBookList component. The CategoryBookList component iterates over the books, and invokes the CategoryBookListItem component, passing the current book as a prop. This means, in principle, that you only need to fetch the books into the book list in the CategoryView component and everything should work! Unfortunately, that did not happen for me. The book information was there, but the images were broken. As it turned out, it took me way too long to realize that I did not have all of the book images I needed in my src/assets/book-images folder. I only had the 4 or 5 books from my default category. This problem took me way too long to solve, so please double check that your have added all of your book images to the appropriate folder.
+
+Here is the complete code for my CategoryView component.
+
+<script setup lang="ts">
+import type { BookItem } from "@/types";
+import TheCategoryNav from "@/components/TheCategoryNav.vue";
+import TheCategoryBookList from "@/components/TheCategoryBookList.vue";
+import { useRoute } from "vue-router";
+const route = useRoute();
+let response = await fetch(`http://localhost:8080/AnotherBookstoreFetch/api/categories/name/${route.params.name}/books/`);
+let data = await response.json();
+let bookList = data as BookItem[];
+</script>
+
+<style scoped></style>
+<template>
+<div>
+<the-category-nav></the-category-nav>
+<the-category-book-list :bookList="bookList"> </the-category-book-list>
+</div>
+</template>
+The only slightly complex thing here is the URL path being passed into fetch. Notice the backticks (`...`) at the beginning and the end of that string. This is called a template literalLinks to an external site.. You can think of the template literal used here as a string that can nest an expression inside of it. So when you see
+
+`...api/categories/name/${route.params.name}/books/`
+The ${route.params.name} is an expression that evaluates to a string, and that string become part of the remaining string. This code successfully returns the books for the category name parameter inside the route. Clicking through the categories in the menu or the navbar should display the books for that category.
+
+Style and Interface Requirements
+Remember that requirements of project are cumulative, so all relevant requirements from Projects 1–4 still apply.
+
+Fix Past Problems
+For Project 5, please fix any problems that an instructor or grader has mentioned in their comments to previous project (specifically, Project 3, your Vue project). The grades and comments for Project 3 may not be out until the second week of this project, but this requirement still holds. If you are still working on issues when your submission is due, let us know in Canvas when you submit Project 5. In general, we try not to take off points twice for the same problem if you did not have time to fix it. For example, if an instructor or grader took off points for something in Project 2, then you did not have time to fix it when you submitted Project 3, so we should not take off points for the same problem. However, for Project 5, you *will* have time to fix these problems, so we will take off points again.
+
+Implement a transition (to be checked in Project 6)
+Implement a transition somewhere in your project. If the transition is not obvious, please let us know when you submit Project 6 in Canvas what the transition is. Here are some obvious transitions:
+Scale the CTA button when the user hovers over it.
+If you have a hover dropdown menu, make it slide out from the menu button (see the "Add a transition to the hover dropdown" video in Module 2).
+If you implement a hamburger menu similar to the one in the hamburger-demo, you can slide it in from the side as in the demo. It's a good idea to also add or change something about the menu that distinguishes it from the one in the demo. For example, maybe the hamburger icon changes to an "X".
+Buttons
+The CTA button (call-to-action) on the welcome page should take the user to your default category page. Your default category will typically be your first one (with ID 1001). This also means that your CTA button should be named appropriately. For example, it should be called "Shop Now" or "Shop for Books" or something like that. It should not be called "Sign up Now" or "Create an Account" or "Buy this Book Now".
+The cursor should always change to a pointer (hand) when you hover over any button (including icon buttons) or link. The CTA, primary, and secondary buttons should all have a style change (for example, a darker background or bold text) when the user hovers over them.
+Note that when you hover over an element and its style changes, the position of surrounding elements should not change. For example, if  you hover over a button and the text changes to bold, the button should be large enough so that the size of the button does not change. If you intend the size of the button to change, there should be enough space around the button so that elements around it do not move.
+Padding in icon buttons and cart-count
+Make sure your icon buttons have padding around the icon. The icon should not touch the edge of the button. There should be at least a few pixels of padding around it.
+The same thing applies to the cart-count, whether you put your cart-count in a little circle or inside of your shopping cart. Make sure the count is not to close to edge of the shape that surrounds it.
+If you put your cart count inside (or beside) your cart, make sure it is centered vertically or horizontally (as appropriate).
+Book Boxes
+I've seen a few book boxes (in Project 3) that do not wrap until the boxes get very thin. Make sure you set a min-width on your book box that keeps both the book image and the text (book info) easily readable.
+The book image should not shrink. It should always keep its original height and width (and therefore it will always maintain its correct aspect ratio).
+The text of the book title should not wrap so much that there is only one word on a line.
+Book boxes should wrap within the space of the browser width that we will be looking at, which is from about 1000 pixels to 1400 pixels. When we expand or shrink the browser between those two widths, we should see the book wrapping occur. For example, we should not have to shrink the browser to 600 pixels before we see evidence of wrapping.
+No Book Boxes on Welcome Page
+Do not put book boxes on your welcome page. You can put book images on your welcome page, and even include the title, but do not put the same kind of book boxes that you have on your category page on your welcome page. Users should never be able to mistake your welcome page for your category page.
+Do not put add-to-cart buttons (or read-now buttons) on your welcome page. The user's attention should go to the call-to-action button, and the add-to-cart buttons are distractions from this goal.
+Miscellaneous
+Make sure that your header and footer extend the width of the page (up to the max width of the body). For example, do not use a footer that remains at the bottom left (or button right) of the page.
+Make sure your overlays are flush with bottom of image that they overlay. I've seen a couple pages where there are a few pixels of image underneath the transparent overlay.
