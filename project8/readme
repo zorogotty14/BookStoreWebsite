@@ -1,0 +1,309 @@
+Setup
+Establish a new project [Name]BookstoreOrder according to our standard setup procedure. Copy the relevant files from your Validate project and make the relevant name changes. Before running your client module, you may have to install vuelidate and validator.  If so, just run:
+
+npm install @vuelidate/core --save
+npm install @vuelidate/validators --save 
+Run your project. It should behave the same as your last project.
+
+If your Pinia stores don't seem to be working, re-install:
+
+npm install pinia
+Double check that your server's build.gradle file ([proj-name]/build.gradle) contains the following  dependencies for JSON processing. If you are still using the build.gradle file we gave you in the Project 4 resources, these dependencies should already be there.
+
+     // JAX-B dependencies for JDK 9+
+    implementation('javax.xml.bind:jaxb-api:2.3.1')
+    implementation('com.sun.xml.bind:jaxb-core:2.2.11')
+    implementation('com.sun.xml.bind:jaxb-impl:2.2.11')
+    implementation('javax.activation:activation:1.1.1')
+This will let us receive and process JSON requests via HTTP POSTs.
+
+Add the following in your types.ts 
+
+export interface CustomerForm {
+  name: string;
+  address: string;
+  phone: string;
+  email: string;
+  ccNumber: string;
+  ccExpiryMonth: number;
+  ccExpiryYear: number;
+}
+
+export interface Order {
+  orderId: number;
+  amount: number;
+  dateCreated: number;
+  confirmationNumber: number;
+  customerId: number;
+}
+
+export interface OrderDetails {
+  order: Order;
+  customer: CustomerForm;
+  books: BookItem[];
+}
+
+export interface ServerErrorResponse {
+  reason: string;
+  message: string;
+  fieldName: string;
+  error: boolean;
+}
+1. Placing the Order from the Client
+To place the order we will submit the cart and the customer form details to the server. The server will process the order and return with details of the placed order, or an error condition. On success, we must clear the cart and land on the confirmation page. When an error occurs, we will display by default a "please try again" message, or display the message from the server.
+
+In CheckoutView.vue script section, let's model the server error message in case the server provides one.
+
+Add the following string reference to the script setup in CheckoutView.vue:
+
+const defaultServerErrorMessage = "An unexpected error occurred, please try again."
+const serverErrorMessage = ref(defaultServerErrorMessage);
+Now, the submitOrder method will dispatch a placeOrder action to the store. We will either set the checkoutStatus to OK or SERVER_ERROR based on the server response.  We also handle the case if we throw a local exception and display the default server error message in that case.  Notice also that we choose to handle the error messages here at the component, not the store.  We also use a union type ("OrderDetails | ServerErrorResponse") to capture the fact we are not sure if we will get a server error or a valid response.
+
+Replace the submitOrder method in CheckoutView.vue with:
+
+async function submitOrder() {
+  console.log("Submit order");
+  const isFormCorrect = await v$.value.$validate();
+  if (!isFormCorrect) {
+    form.checkoutStatus = "ERROR";
+  } else {
+    try {
+      form.checkoutStatus = "PENDING";
+      serverErrorMessage.value = defaultServerErrorMessage;
+
+      const placeOrderResponse: OrderDetails | ServerErrorResponse =
+        await cartStore
+          .placeOrder({
+            name: form.name,
+            address: form.address,
+            phone: form.phone,
+            email: form.email,
+            ccNumber: form.ccNumber,
+            ccExpiryMonth: form.ccExpiryMonth,
+            ccExpiryYear: form.ccExpiryYear,
+          })
+
+      if ("error" in placeOrderResponse) {
+        form.checkoutStatus = "SERVER_ERROR";
+        serverErrorMessage.value = placeOrderResponse.message
+        console.log("Error placing order", placeOrderResponse);
+      } else {
+        form.checkoutStatus = "OK";
+        await router.push({name: "confirmation-view"});
+      }
+
+    } catch (e) {
+      form.checkoutStatus = "SERVER_ERROR";
+      serverErrorMessage.value = defaultServerErrorMessage;
+      console.log("Error placing order", e);
+    }
+  }
+}
+Add the following action to your cart store to place an order.
+
+async placeOrder(customerForm: CustomerForm): Promise<OrderDetails | ServerErrorResponse> {
+  const order = { cart: this.cart, customerForm: customerForm }
+  console.log(JSON.stringify(order))
+
+  const response: Response = await fetch(`${apiUrl}/orders`, {
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    redirect: 'follow',
+    referrer: 'client',
+    method: 'POST', // or 'PUT'
+    body: JSON.stringify(order)
+  })
+
+  const placeOrderResponse: OrderDetails | ServerErrorResponse = await response.json()
+
+  if (response.ok) {
+    this.clearCart()
+  }
+  return placeOrderResponse
+}
+Import any types that you need to import. Note that we are sending an order (the cart and the customer form) to the server. Then on success we are clearing the cart.
+
+Also, we are changing the "fetch" call to use an HTTP POST verb rather than the GET by default, and that we are sending the entire order (cart and customer form) as one large JSON string in the body of the POST message.
+
+Run your project, and verify using developer tools that the order is sent as the request payload You should find that the server responds with a 404 response, because the server side does not know about how to POST to /api/orders yet. See the screenshot below for an example of what to verify.
+
+Bookstore Order Project: 404 on request
+
+2. Receiving the Order on the Server: Preparations
+Let us get ready for receiving and validating the incoming order on the server.
+
+Unzip the provided server-order.zip file in the server folder.
+
+You should see these new folders in the business folder:
+
+cart: contains model objects to capture cart information from placing the order
+
+order: contains model objects and services to capture and validate an order
+
+customer: a CustomerForm captures the customer details from the order
+
+api: an exception handler to process validation failures is provided.
+
+Add an instance of OrderService to ApplicationContext.
+
+Following our singleton pattern from earlier, let's add OrderService to the ApplicationContext in the same way as we exposed BookDao and CategoryDao. This way ApplicationContext becomes the owner of all objects useful to the API code.
+
+Add the following code to the end of ApplicationContext's constructor:
+
+	orderService = new DefaultOrderService();
+	((DefaultOrderService)orderService).setBookDao(bookDao);
+The OrderService cooperates with a BookDao to place orders. This is how we arrange for classes owned by the application context to co-operate without knowing about the application context.
+
+Add the following field to the ApiResource class.
+
+	private final OrderService orderService = ApplicationContext.INSTANCE.getOrderService();
+This provides access to the order service for the API resource.
+
+We have finished establishing access to our OrderService for use in our ApiResource class. Let's continue server preparations to be able to validate an order once it is received.
+
+Ensuring that client side and server side types correspond.
+Jackson and Jersey are the libraries we are using in the REST API that are responsible for converting from JSON to Java and back again. The conversion only works when the property names of the types in the client maps with the field names of the Java types on the server. The mapping can be done using @JsonProperty annotation.  Essentially, we are transferring a CustomerForm and a ShoppingCart. To map the itemArray  attribute of the ShoppingCart of the client with the items attribute of the ShoppingCart class of the server use the following at the server side:
+
+@JsonProperty("itemArray")
+private List<ShoppingCartItem> items;
+3. Validating the Order on the Server: Preparations
+We will make all validation errors throw an ApiException.ValidationFailure exception. This may look a little strange - in Java exceptions can have subclasses and it is a nice way to distinguish grouped exception types. Here for consistency, we will make all exceptions thrown from our API server be subclasses of ApiException - this lets us handle exceptions centrally and simplifies the code (lest we need many catch clauses for many exceptions).
+
+Make a subclass of ApiException to manage all validation errors.
+
+Change your ApiException class to include a static subclass ValidationFailure.  A ValidationFailure exception models a validation failure that may or may not involve a field name.  Some failures will be assocaited with field validation issues, but some will be others (see validation rules below).
+
+public class ApiException extends RuntimeException {
+
+    public ApiException(String message) {
+        super(message);
+    }
+
+    public ApiException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+   public static class ValidationFailure extends ApiException {
+
+      private String fieldName = null;
+
+      public ValidationFailure(String message) {
+         super(message);
+      }
+
+      public ValidationFailure(String message, Throwable t) {
+         super(message, t);
+      }
+
+      public ValidationFailure(String fieldName, String message) {
+         super(message);
+         this.fieldName = fieldName;
+      }
+
+      public ValidationFailure(String fieldName, String message, Throwable cause) {
+         super(message, cause);
+         this.fieldName = fieldName;
+      }
+
+      public String getFieldName() {
+         return fieldName;
+      }
+
+      public boolean isFieldError() {
+         return fieldName != null && fieldName.length()>0;
+      }
+   }
+}
+We will use this ValidationFailure exception for all validation issues in this project.
+
+All of our ApiExceptions that are thrown from our Resource object can be managed using an ExceptionMapper class in Jersey. To see how this works, have a look at the ApiExceptionHandler class provided in the project resources in the api folder. This controls how the server sends responses to clients when exceptions occur. In particular, the toResponse method is responsible for returning responses with different status codes.
+
+By default, we will return a 500 "internal server error" status code. However, if it is our validation exception subclass, we send back a 400 "bad request" error code. In both cases, we will respond with a JSON object so we can manage errors on the client side.  We will see an example of this shortly.
+
+4. Receiving the Order on the Server
+We are now ready to actually receive the order from the browser.
+
+Add this placeOrder method to ApiResource.java
+
+	@POST
+	@Path("orders")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public OrderDetails placeOrder(OrderForm orderForm) {
+
+		try {
+			long orderId = orderService.placeOrder(orderForm.getCustomerForm(), orderForm.getCart());
+			throw new ApiException.ValidationFailure("Transactions have not been implemented yet.");
+
+			// NOTE: MORE CODE PROVIDED NEXT PROJECT
+
+		} catch (ApiException e) {
+			// NOTE: all validation errors go through here
+			throw e;
+		} catch (Exception e) {
+			throw new ApiException("order placement failed", e);
+		}
+	}
+Notice that we have automatically taken the JSON from the client and turned it into an instance of an OrderForm class as the method parameter. The Jersey/JAXB framework we are using does that automatically. The placeOrder method both consumes and produces JSON objects. After an order has been placed, this method returns an OrderDetails object.
+
+You might notice that for now we are placing the order and always failing with a validation error "Transactions have not been implemented yet". The next project will complete the implementation of transactions on the server side.
+
+Run your project. When you submit a valid checkout request, you should expect to see a 400 ERROR code with the exception message printed out in the response as a JSON object.
+
+Showing how the server responds with a 400 JSON response
+
+5. Server Validations
+You are required to complete server side validations in the business.order.DefaultOrderService class. The tasks are listed as TODO comments in that class. The name field and some cart validations have been provided as guidance.
+
+The following customer form validations are required:
+
+All fields (including name and address): should be present and non-null and non-empty
+Name and address must have at least 4 and at most 45 characters in length.
+Phone: after removing all spaces, dashes, and parens from the string it should have exactly 10 digits
+Email: should not contain spaces; should contain a "@"; and the last character should not be "."
+Credit card number: after removing spaces and dashes, the number of characters should be between 14 and 16.
+Expiration date: the month and year should be the current month and year or later
+The following field names must be used as ValidationFailure field names in your code:
+name, address, phone, email, ccNumber
+For expiration date issues, do NOT specify a field but use an error message "Please enter a valid expiration date."
+The following shopping cart validations are required:
+
+The cart should contain at least one item
+Each cart item has quantity of books between 1 and 99
+Each cart item's price should match the price for the item from the database
+Each cart item's category should match the category for the item from the database.
+For cart validation issues, use an error message of your choice relevant to the validation failure.
+The validations should each have a distinct short clear message that displays upon invalid input.
+
+You should expect to see and MUST use 'Transactions have not been implemented yet' with a 400 code with valid input.
+
+Testing Your Validations
+It may have occurred to you that it will be hard to actually test the validations because we will not be able to easily enter invalid data in our browser client.
+
+However, we can test how our server responds in isolation from the browser using any one of the wide array of API testing tools. For this project, we can actually stick with IntelliJ's REST console.
+
+In IntelliJ, open the server/test/resources/test.http file.
+
+Using http files we can create and send HTTP requests with data of our choice on demand and see the responses.
+
+You have been given a sample starting request for your API categories. Change the [Name] in the first line to your bookstore name. Click on the green triangle to the left of the "GET". You should see the nicely formatted JSON response with categories come back.
+
+There is a convenient way to easily capture the HTTP request for placing an order.
+
+Follow the next steps in your browser to capture the placeOrder request
+
+Open the developer tools to the network tab
+Browse to your website in the browser, and clear your cart if it has any items.
+Add one book to the cart, and proceed to checkout.
+Clear the network tab of any existing requests using the trash bin.
+Fill in the form field with valid data, and checkout.
+No matter the response, we can capture the request:
+Find the POST (not OPTIONS) request to /api/orders second to the top of your network
+Right click, and choose Copy > Copy as cURL
+Paste the clipboard into the bottom of your test.http file underneath the ### separator.
+IntelliJ automatically converts the cURL format into your HTTP format. You can now replay that request with different and possibly invalid form data or invalid cart data to test your validations are working.
