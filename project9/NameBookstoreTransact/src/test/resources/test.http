@@ -1,0 +1,80 @@
+# For a quick start check out our HTTP Requests collection (Tools|HTTP Client|Open HTTP Requests Collection) or
+# paste cURL into the file and request will be converted to HTTP Request format.
+#
+# Following HTTP Request Live Templates are available:
+# * 'gtrp' and 'gtr' create a GET request with or without query parameters;
+# * 'ptr' and 'ptrp' create a POST request with a simple or parameter-like body;
+# * 'mptr' and 'fptr' create a POST request to submit a form with a text or file field (multipart/form-data);
+
+GET http://localhost:8080/[Name]BookstoreOrder/api/categories
+Accept: application/json
+
+###
+# curl 'http://localhost:8080/nameBookstoreOrder/api/orders'
+#  -H 'Accept: */*'
+#  -H 'Accept-Language: en-US,en'
+#  -H 'Cache-Control: max-age=0'
+#  -H 'Connection: keep-alive'
+#  -H 'Content-Type: application/json'
+#  -H 'Origin: http://localhost:5173'
+#  -H 'Referer: http://localhost:5173/'
+#  -H 'Sec-Fetch-Dest: empty'
+#  -H 'Sec-Fetch-Mode: cors'
+#  -H 'Sec-Fetch-Site: same-site'
+#  -H 'Sec-GPC: 1'
+#  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36'
+#  -H 'sec-ch-ua: "Chromium";v="118", "Brave";v="118", "Not=A?Brand";v="99"'
+#  -H 'sec-ch-ua-mobile: ?0'
+#  -H 'sec-ch-ua-platform: "Windows"'
+#  --data-raw '{"cart":{"itemArray":[{"book":{"bookId":1001,"title":"Holly","author":"Stephen King","description":"","price":2392,"rating":0,"isPublic":false,"isFeatured":false,"categoryId":1001},"quantity":1}]},"customerForm":{"name":"name","address":"abc","phone":"abc","email":"name@abc","ccNumber":"abc","ccExpiryMonth":09,"ccExpiryYear":9876}}'
+#  --compressed
+POST http://localhost:8080/nameBookstoreOrder/api/orders
+Accept: */*
+Accept-Language: en-US,en
+Cache-Control: max-age=0
+Connection: keep-alive
+Origin: http://localhost:5173
+Referer: http://localhost:5173/
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-site
+Sec-GPC: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36
+sec-ch-ua: "Chromium";v="118", "Brave";v="118", "Not=A?Brand";v="99"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Windows"
+Content-Type: application/json
+
+{
+  "cart": {
+    "itemArray": [
+      {
+        "book": {
+          "bookId": 1001,
+          "title": "Holly",
+          "author": "Stephen King",
+          "description": "",
+          "price": 2392,
+          "rating": 0,
+          "isPublic": false,
+          "isFeatured": false,
+          "categoryId": 1001
+        },
+        "quantity": 0
+      }
+    ]
+  },
+  "customerForm": {
+    "name": "name",
+    "address": "1215",
+    "phone": "abc",
+    "email": "g4@vt.edu",
+    "ccNumber": "abc",
+    "ccExpiryMonth": 7,
+    "ccExpiryYear": 2089
+  }
+}
+
+###
+
+
